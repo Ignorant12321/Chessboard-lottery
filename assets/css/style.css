@@ -1,0 +1,1214 @@
+/* 元素变量 */
+    :root {
+        /* 亮色模式 (默认) */
+        --primary: #5e72e4;
+        --primary-dark: #233dd2;
+        --success: #2dce89;
+        --warning: #fb6340;
+        --info: #11cdef;
+        --inactive-gray: #e2e8f0;
+
+        --text-main: #32325d;
+        --text-light: #8898aa;
+        --text-chart: #666;
+        /* 图表文字颜色 */
+
+        --bg-body: #f8f9fe;
+        --bg-card: #ffffff;
+        --bg-secondary: #f4f5f7;
+        /* 面板背景 */
+        --bg-hover: #f6f9fc;
+        --bg-input: #ffffff;
+
+        --border-color: #e9ecef;
+        --shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+
+        --cell-bg: #f7fafc;
+        --cell-border: #e2e8f0;
+        --cell-text: #4a5568;
+
+        --radius: 16px;
+
+        /* 热力图样式 */
+        --cell-radius: 6px;
+        --tooltip-radius: 12px;
+        --tooltip-bg-light: rgba(255, 255, 255, 0.95);
+        --tooltip-bg-dark: rgba(30, 30, 30, 0.95);
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+        --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* 深色模式 */
+    body.dark-mode {
+        --primary: #758bfd;
+        --primary-dark: #5e72e4;
+
+        --text-main: #f0f2f5;
+        --text-light: #a0aec0;
+        --text-chart: #a0aec0;
+        --inactive-gray: #4a5568;
+
+        --bg-body: #121212;
+        --bg-card: #1e1e1e;
+        --bg-secondary: #121212;
+        --bg-hover: #2d3748;
+        --bg-input: #2d3748;
+
+        --border-color: #2d3748;
+        --shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.3);
+
+        --cell-bg: #2d3748;
+        --cell-border: #4a5568;
+        --cell-text: #e2e8f0;
+    }
+
+    /* 全局样式 */
+    body {
+        font-family: 'Open Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-main);
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        user-select: none;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* 主题切换按钮 */
+    #theme-toggle {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: transparent;
+        border: 1px solid var(--border-color);
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        /* 主题切换动画：时长增加到0.8s，曲线调整为有弹性的回弹效果 */
+        transition: transform 0.8s cubic-bezier(0.34, 1.3, 0.64, 1), background-color 0.3s;
+
+        color: var(--text-main);
+        z-index: 20;
+    }
+
+    #theme-toggle:hover {
+        background: var(--bg-hover);
+        transform: rotate(90deg);
+        /* 悬停时轻微旋转 */
+    }
+
+    /* 深色模式下的按钮旋转状态：旋转-360度并回弹 */
+    body.dark-mode #theme-toggle {
+        transform: rotate(-360deg);
+    }
+
+    /* 全屏容器 */
+    .fullscreen-section {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-secondary);
+        transition: background-color 0.3s;
+    }
+
+.main-container {
+        display: flex;
+        /* 默认行布局 (宽 > 高) */
+        flex-direction: row;
+        width: 100%;
+        flex: 1;
+        /* 充满父容器 */
+        align-items: stretch;
+        background: var(--bg-card);
+        overflow: hidden;
+        /* 隐藏超出容器的内容 */
+        transition: background-color 0.3s;
+    }
+
+    /* 响应式布局：当是竖屏（高>=宽）时，改为上下布局 */
+    @media (orientation: portrait) {
+        .main-container {
+            flex-direction: column;
+        }
+
+        .info-panel {
+            flex: 0 0 auto !important;
+            width: 100%;
+            max-height: 55vh;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05) !important;
+            padding: 15px !important;
+        }
+
+        .board-panel {
+            flex: 1;
+            width: 100%;
+            min-height: 40vh;
+        }
+
+    }
+
+    /* 当是横屏（宽>高），但高度较小（移动端/平板横屏）时，强制锁定高度，内部滚动 */
+    @media (orientation: landscape) and (max-height: 800px) {
+        .fullscreen-section {
+            height: 100vh !important;
+            min-height: 100vh !important;
+        }
+
+        .main-container {
+            height: 100% !important;
+            overflow: hidden !important;
+            /* 防止容器被内容撑开 */
+        }
+
+        .info-panel {
+            flex: 0 0 45% !important;
+            height: 100% !important;
+            overflow-y: auto !important;
+            /* 让信息栏内部滚动 */
+            padding: 15px !important;
+        }
+
+        .board-panel {
+            flex: 1 !important;
+            height: 100% !important;
+            overflow: hidden !important;
+        }
+
+        .header {
+            margin-bottom: 10px !important;
+        }
+
+        .header h1 {
+            margin-bottom: 2px !important;
+            font-size: 20px !important;
+        }
+
+        .stats-grid {
+            gap: 8px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .progress-section-wrapper {
+            margin-bottom: 15px !important;
+        }
+    }
+
+    /* 移动端/小屏幕适配 (768px以下就触发) */
+    @media (max-width: 768px),
+    (max-height: 800px) {
+
+        /* 标题缩小 */
+        .header h1 {
+            font-size: 20px !important;
+            margin-bottom: 5px !important;
+        }
+
+        .header-logo {
+            width: 24px !important;
+            height: 24px !important;
+            flex-basis: 24px !important;
+        }
+
+        .header p {
+            font-size: 12px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .header {
+            margin-bottom: 10px !important;
+        }
+
+        /* 卡片缩小 */
+        .stats-grid {
+            gap: 8px !important;
+            margin-bottom: 15px !important;
+        }
+
+        .stat-card {
+            padding: 10px !important;
+            border-radius: 8px !important;
+        }
+
+        .stat-label {
+            font-size: 10px !important;
+            margin-bottom: 2px !important;
+        }
+
+        .stat-value {
+            font-size: 18px !important;
+        }
+
+        /* 进度的容器 */
+        .progress-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 12px;
+        }
+
+        .progress-info-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 彩蛋徽章 */
+        .prob-badge {
+            font-size: 11px;
+            color: var(--primary);
+            background: rgba(94, 114, 228, 0.1);
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-top: 5px;
+            display: inline-block;
+            width: fit-content;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .prob-badge:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* 进度条区域缩小 */
+        .progress-section-wrapper {
+            margin-bottom: 15px !important;
+        }
+
+        .progress-container-inner {
+            height: 16px !important;
+            margin-top: 8px !important;
+        }
+
+        .mark {
+            width: 16px !important;
+            height: 16px !important;
+            font-size: 8px !important;
+        }
+
+        /* 按钮缩小 */
+        .btn-group {
+            gap: 8px !important;
+        }
+
+        .btn {
+            padding: 10px !important;
+            font-size: 12px !important;
+            border-radius: 6px !important;
+        }
+
+        /* 面板内边距缩小 */
+        .info-panel {
+            padding: 15px !important;
+        }
+
+        /* 主题按钮 */
+        #theme-toggle {
+            top: 10px !important;
+            right: 10px !important;
+            width: 30px !important;
+            height: 30px !important;
+            font-size: 14px !important;
+        }
+    }
+
+    /* 左侧 信息栏 */
+    .info-panel {
+        flex: 0 0 40%;
+        width: 100%;
+        background: var(--bg-card);
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        padding: 30px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow-y: auto;
+        z-index: 10;
+        min-width: 0;
+        position: relative;
+        transition: background-color 0.3s;
+    }
+
+    /* 右侧 棋盘区域 */
+    .board-panel {
+        width: 100%;
+        background: var(--bg-secondary);
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        transition: background-color 0.3s;
+    }
+
+    /* 棋盘缩放容器 */
+    .board-scaler {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        /* 确保不会溢出 */
+        overflow: hidden;
+    }
+
+    /* =========================================
+       UI 组件：左侧信息
+       ========================================= */
+
+    /* 标题信息 */
+    .header {
+        margin-bottom: 20px;
+    }
+
+    .header h1 {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--primary);
+        margin: 0 0 5px 0;
+        letter-spacing: -1px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .header-logo {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+        display: block;
+        flex: 0 0 32px;
+    }
+
+    .header p {
+        color: var(--text-light);
+        font-size: 14px;
+        margin: 0;
+    }
+
+    /* 信息卡片 */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: var(--bg-hover);
+        border-radius: 12px;
+        padding: 15px;
+        text-align: left;
+        border: 1px solid var(--border-color);
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .stat-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-light);
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-main);
+        display: block;
+    }
+
+    .stat-value.highlight {
+        color: var(--success);
+    }
+
+    .stat-value.primary {
+        color: var(--primary);
+    }
+
+    /* 进度条 */
+    .progress-section-wrapper {
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    .progress-container-inner {
+        position: relative;
+        height: 10px;
+        background: var(--inactive-gray);
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+
+    /* 深色模式下加深槽位颜色并增强边框对比度 */
+    body.dark-mode .progress-container-inner {
+        background: #2d3748;
+        border: 1px solid #4a5568;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary) 0%, var(--info) 100%);
+        border-radius: 5px;
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+
+    .progress-marks {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+    }
+
+    /* 标记点样式优化 */
+    .mark {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        background: var(--bg-card);
+        border: 2px solid var(--inactive-gray);
+        color: var(--text-light);
+        border-radius: 50%;
+        z-index: 2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        font-weight: bold;
+
+        transition: background-color 0.5s ease,
+            border-color 0.5s ease,
+            color 0.3s ease,
+            transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* 状态1: 已经激活 (Done) - 绿色 */
+    .mark.passed {
+        border-color: var(--success);
+        background: var(--success);
+        color: white;
+        transform: translate(-50%, -50%) scale(1.0);
+    }
+
+    /* 状态2: 正在激活 (Current Active) - 橙色/警告色 + 呼吸效果 */
+    .mark.active {
+        border-color: var(--warning);
+        background: var(--warning);
+        color: white;
+        box-shadow: 0 0 0 3px rgba(251, 99, 64, 0.3);
+        transform: translate(-50%, -50%) scale(1.2);
+        z-index: 3;
+    }
+
+    /* 操作按钮 */
+    .btn-group {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 10px;
+        margin-top: auto;
+    }
+
+    .btn {
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11);
+    }
+
+    .btn-primary:active {
+        animation: zoomEffect 0.2s ease-in-out infinite alternate;
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+    }
+
+    .btn-outline:hover {
+        background: rgba(94, 114, 228, 0.1);
+    }
+
+    .btn-outline:active {
+        background: rgba(94, 114, 228, 0.1);
+        animation: zoomEffect 0.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes zoomEffect {
+        0% {
+            transform: scale(1);
+        }
+
+        100% {
+            transform: scale(0.90);
+        }
+    }
+
+    /* =========================================
+       UI 组件：右侧棋盘
+       ========================================= */
+
+    /* 右侧棋盘 */
+    table#chessboard {
+        border-collapse: separate;
+        border-spacing: 8px;
+        /* 增加间距 */
+        background: var(--bg-card);
+        padding: 15px;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        transition: transform 0.1s ease-out, background-color 0.3s;
+        transform-origin: center center;
+        table-layout: fixed;
+        /* 固定表格布局，防止单元格被挤压 */
+    }
+
+    td {
+        width: 60px;
+        height: 60px;
+        border: 1px solid var(--cell-border);
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 18px;
+        color: var(--cell-text);
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background-color: var(--cell-bg);
+        user-select: none;
+        position: relative;
+        min-width: 60px;
+        min-height: 60px;
+        /* 关键修改：防止被压缩 */
+        box-sizing: border-box;
+        /* 确保边框计算在内 */
+    }
+
+    td:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary);
+    }
+
+    /* 选中时的动画 */
+    .red-border {
+        border: 2px solid #ff6b6b !important;
+        animation: pulse 0.5s ease-in-out;
+        z-index: 5;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.15);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+/* 选项卡导航区 */
+    .tabs-section {
+        background: var(--bg-card);
+        padding: 20px;
+        border-top: 1px solid var(--border-color);
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .tabs {
+        display: flex;
+        background-color: var(--bg-hover);
+        border-radius: 10px;
+        padding: 4px;
+        margin: 0 auto 20px;
+        max-width: 800px;
+        transition: background-color 0.3s;
+    }
+
+    .tab-button {
+        flex: 1;
+        padding: 10px 0;
+        text-align: center;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 8px;
+        color: var(--text-light);
+        transition: all 0.2s;
+        font-weight: 500;
+    }
+
+    .tab-button.active {
+        background-color: var(--bg-card);
+        color: var(--primary);
+        font-weight: bold;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .tab-content-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* 设置组样式 */
+    .setting-group {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .setting-group h4 {
+        margin: 0 0 15px 0;
+        font-size: 14px;
+        color: var(--text-light);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+    }
+
+    .setting-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: var(--text-main);
+    }
+
+    .settings-item-input {
+        width: 80px;
+        padding: 6px 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        text-align: center;
+        color: var(--text-main);
+        background-color: var(--bg-input);
+        font-weight: 600;
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+/* 图表容器 */
+    .chart-container {
+        width: 100%;
+        height: auto;
+        min-height: 250px;
+        position: relative;
+    }
+
+    /* 烟花容器 */
+    .firework {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        top: -40px;
+        left: -40px;
+        pointer-events: none;
+        z-index: 100;
+    }
+
+    .firework-particle {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0;
+    }
+
+    /* 弹窗 */
+    #customDialog {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        justify-content: center;
+        align-items: center;
+        z-index: 200;
+        backdrop-filter: blur(4px);
+    }
+
+    .custom-dialog-content {
+        background: var(--bg-card);
+        padding: 30px;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 350px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        color: var(--text-main);
+    }
+
+    @keyframes popIn {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .h2_dialog {
+        text-align: left;
+        margin-top: 0;
+        color: var(--text-main);
+    }
+
+    .dialog-btn {
+        margin: 10px 5px;
+        padding: 8px 20px;
+        border-radius: 20px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    /* 滑块样式 */
+    .slider-wrapper {
+        position: relative;
+        margin-top: 15px;
+        color: var(--text-main);
+    }
+
+    /* 滑块头部（标签+输入框） */
+    .slider-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: var(--text-main);
+    }
+
+    /* 用于包裹 range 和 tooltip */
+    .range-container {
+        position: relative;
+        width: 100%;
+        padding-bottom: 15px;
+    }
+
+    input[type=range] {
+        -webkit-appearance: none;
+        /* 移除默认样式 */
+        width: 100%;
+        background: transparent;
+        margin: 10px 0;
+    }
+
+    input[type=range]:focus {
+        outline: none;
+    }
+
+    /* Webkit (Chrome, Safari, Edge) 轨道样式 */
+    input[type=range]::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 6px;
+        cursor: pointer;
+        background: var(--border-color);
+        border-radius: 3px;
+        transition: background-color 0.3s;
+    }
+
+    /* Webkit (Chrome, Safari, Edge) 滑块圆钮样式 */
+    input[type=range]::-webkit-slider-thumb {
+        height: 18px;
+        width: 18px;
+        border-radius: 50%;
+        background: var(--primary);
+        cursor: pointer;
+        -webkit-appearance: none;
+        margin-top: -6px;
+        /* (轨道高度 - 滑块高度) / 2 = (6 - 18) / 2 = -6 */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: transform 0.1s, background-color 0.3s;
+        border: 2px solid #fff;
+        /* 增加白色描边提升对比度 */
+        z-index: 15;
+        position: relative;
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+    }
+
+    /* Tooltip 样式优化：气泡形状（下方） */
+    .slider-tooltip {
+        position: absolute;
+        background: var(--primary);
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: bold;
+
+        /* 放到滑块下方 */
+        top: 35px;
+        left: 0;
+        transform: translateX(-50%);
+
+        display: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+        pointer-events: none;
+        /* 防止遮挡鼠标 */
+        transition: background-color 0.3s;
+    }
+
+    /* 气泡上方的小三角 (指示向上) */
+    .slider-tooltip::before {
+        content: "";
+        position: absolute;
+        top: -6px;
+        /* 移动到盒子上方 */
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 0 6px 6px 6px;
+        /* 上右下左：上0，下有颜色，形成向上的三角 */
+        border-style: solid;
+        border-color: transparent transparent var(--primary) transparent;
+    }
+
+    /* 统计结果小字 */
+    .result_p {
+        font-size: 16px;
+        color: var(--text-light);
+        display: flex;
+        justify-content: space-around;
+        margin-top: 10px;
+        background: var(--bg-hover);
+        padding: 8px;
+        border-radius: 6px;
+        transition: background-color 0.3s;
+    }
+
+    #sponsorImg {
+        width: 100%;
+        display: none;
+        margin: 10px auto;
+    }
+
+    /* =========================================
+   热力图容器 (Heatmap Grid)
+   ========================================= */
+    .heatmap-grid {
+        display: grid;
+        gap: 4px;
+        /* 稍微增加间距 */
+        margin: 20px auto;
+        width: 100%;
+        max-width: 500px;
+        padding: 10px;
+        /* 防止在移动端溢出 */
+        box-sizing: border-box;
+    }
+
+    .heatmap-cell {
+        aspect-ratio: 1;
+        border-radius: var(--cell-radius);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        cursor: pointer;
+        font-family: var(--font-main);
+        line-height: 1.2;
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+            box-shadow 0.25s ease,
+            filter 0.2s ease;
+        opacity: 0;
+        animation: cellFadeIn 0.5s forwards;
+    }
+
+    /* 入场动画关键帧 */
+    @keyframes cellFadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* 悬停状态 */
+    .heatmap-cell:hover {
+        transform: scale(1.15) translateY(-2px);
+        z-index: 20;
+        box-shadow: var(--shadow-lg);
+        filter: brightness(1.05);
+    }
+
+    /* 数字样式 */
+    .heatmap-cell .cell-idx {
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .heatmap-cell .cell-prob {
+        font-size: 11px;
+        opacity: 0.85;
+        font-weight: 500;
+    }
+
+    /* =========================================
+   悬浮提示框 (Tooltip) - 核心优化
+   ========================================= */
+    .heatmap-cell .heatmap-tooltip {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        bottom: 120%;
+        /* 距离上方稍微远一点 */
+        left: 50%;
+        transform: translateX(-50%) translateY(10px) scale(0.95);
+
+        width: 180px;
+        /* 稍微加宽以容纳网格 */
+        padding: 12px;
+        border-radius: var(--tooltip-radius);
+
+        /* 玻璃拟态背景 */
+        background: var(--tooltip-bg-light);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: var(--shadow-lg);
+
+        /* 文本 */
+        color: #333;
+        text-align: left;
+        font-size: 12px;
+        z-index: 100;
+        pointer-events: none;
+        /* 防止遮挡鼠标 */
+
+        /* 过渡动画 */
+        transition: opacity 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+            transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    /* 显示状态 */
+    .heatmap-cell:hover .heatmap-tooltip {
+        visibility: visible;
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+
+    /* Tooltip 底部小三角 */
+    .heatmap-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -6px;
+        border-width: 6px;
+        border-style: solid;
+        border-color: var(--tooltip-bg-light) transparent transparent transparent;
+    }
+
+    /* Tooltip 内部结构 */
+    .tooltip-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .tooltip-header .step-highlight {
+        color: #e63946;
+        /* 醒目红 */
+        background: rgba(230, 57, 70, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    /* 数据网格布局 */
+    .tooltip-stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1px 1fr;
+        /* 左 数据 分隔线 右 数据 */
+        gap: 0 8px;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .tooltip-divider {
+        width: 1px;
+        height: 80%;
+        background: rgba(0, 0, 0, 0.1);
+        justify-self: center;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stat-label {
+        font-size: 10px;
+        color: #666;
+        margin-bottom: 2px;
+    }
+
+    .stat-value {
+        font-size: 13px;
+        font-weight: 700;
+        color: #333;
+    }
+
+    /* 成功率条 */
+    .tooltip-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 8px;
+        border-top: 1px dashed rgba(0, 0, 0, 0.1);
+        font-size: 12px;
+    }
+
+    .tooltip-footer b {
+        color: #2a9d8f;
+        /* 成功绿 */
+        font-size: 14px;
+    }
+
+    /* =========================================
+   深色模式 (Dark Mode)
+   ========================================= */
+    body.dark-mode .heatmap-cell .heatmap-tooltip {
+        background: var(--tooltip-bg-dark);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #e2e8f0;
+    }
+
+    body.dark-mode .heatmap-tooltip::after {
+        border-color: var(--tooltip-bg-dark) transparent transparent transparent;
+    }
+
+    body.dark-mode .tooltip-header {
+        border-bottom-color: rgba(255, 255, 255, 0.15);
+    }
+
+    body.dark-mode .stat-label {
+        color: #aaa;
+    }
+
+    body.dark-mode .stat-value {
+        color: #fff;
+    }
+
+    body.dark-mode .tooltip-footer {
+        border-top-color: rgba(255, 255, 255, 0.15);
+    }
+
+    body.dark-mode .tooltip-footer b {
+        color: #4ade80;
+    }
+
+    /* =========================================
+   移动端适配
+   ========================================= */
+    @media (max-width: 480px) {
+        .heatmap-cell .heatmap-tooltip {
+            width: 160px;
+            padding: 10px;
+        }
+
+        .tooltip-stats-grid {
+            gap: 0 4px;
+        }
+    }
+
+    /* 简单的图例条样式 */
+    .heatmap-legend-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+    }
+
+    .heatmap-legend {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+        color: #888;
+        background: rgba(0, 0, 0, 0.03);
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    .heatmap-gradient-bar {
+        width: 100px;
+        height: 6px;
+        border-radius: 3px;
+        background: linear-gradient(to right, hsl(210, 30%, 85%), hsl(0, 50%, 75%));
+    }
